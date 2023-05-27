@@ -182,8 +182,8 @@ return function(...)
   end
   assert(type(self.token) == "string", "bot token required") 
   self.options = self.options or {}
-  self.time = self.options.time or os.time
-  self.cache = self.options.cache or 1024
+  self.time = self.options.time or (_G.ngx and ngx.time or os.time)
+  self.cache = self.options.cache or 64
   self.http = self.options.http or (_G.ngx and "lapis.nginx.http" or "ssl.https")
   self.api = self.options.api or "https://api.telegram.org/bot%s/%s"
   self.headers = self.options.headers or {}
