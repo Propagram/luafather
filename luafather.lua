@@ -8,10 +8,10 @@ local function request(self, method, chat_id, data)
   local url = string.format(self.api, self.token, string.gsub(method, "_([^_]+)", function(word)
     return string.format("%s%s", string.upper(string.sub(word, 1, 1)), string.lower(string.sub(word, 2)))
   end))
-  local body = cjson.encode(data)
-  if chat_id and body.chat_id == nil then
-    body.chat_id = chat_id
+  if chat_id and data.chat_id == nil then
+    data.chat_id = chat_id
   end
+  local body = cjson.encode(data)
   local headers = {
     ["Content-Type"] = "application/json",
     ["Content-Length"] = #body
