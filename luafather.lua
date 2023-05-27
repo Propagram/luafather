@@ -181,6 +181,7 @@ return function(...)
     self.token = self.options.token
   end
   assert(type(self.token) == "string", "bot token required") 
+  self.options = self.options or {}
   self.time = self.options.time or os.time
   self.cache = self.options.cache or 1024
   self.http = self.options.http or (_G.ngx and "lapis.nginx.http" or "ssl.https")
