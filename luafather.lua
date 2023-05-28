@@ -13,12 +13,12 @@ local function request(self, method, chat_id, data)
   end
   local body = cjson.encode(data)
   local headers = {
-    ["Content-Type"] = "application/json",
-    ["Content-Length"] = #body
+    ["content-type"] = "application/json",
+    ["content-length"] = #body
   }
   if self.headers then
     for key, value in pairs(self.headers) do
-      headers[key] = value
+      headers[string.lower(key)] = value
     end
   end
   local out = {}
