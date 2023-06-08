@@ -42,6 +42,7 @@ local function request(self, method, chat_id, data)
       return false, result, result.error_code
     end
   end
+  return nil, result
 end
 
 local function trigger(self, keys)
