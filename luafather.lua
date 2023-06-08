@@ -40,7 +40,7 @@ end
 local function trigger(self, keys)
   return setmetatable({}, {
     __call = function(_, ...)
-      local value = select(1, ...)
+      local value = ...
       if keys.n == 1 and value == self then
         return request(self, keys[1], _, select(2, ...))
       end
@@ -169,7 +169,10 @@ local function session(self, value, id)
         coroutine.resume(session.thread, object(self, value))
       end
     end,
-    __index = value
+    __index = value,
+    __tostring = function()
+        return cjson.encode(value)
+    end
   })
 end
 
