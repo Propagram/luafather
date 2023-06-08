@@ -31,10 +31,17 @@ local function request(self, method, chat_id, data)
     headers = headers
   })
   local response = table.concat(out)
-  pcall(function()
-    response = cjson.decode(response)
-  end)
-  return response, status
+  if status ~= 200 then
+    return nil, response, status
+  end
+  local ok, result = pcall(cjson.decode, response)
+  if ok and type(result) == "table" then
+    if result.ok and result.result then
+      return result.result
+    else
+      return false, result, result.error_code
+    end
+  end
 end
 
 local function trigger(self, keys)
