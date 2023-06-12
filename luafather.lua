@@ -37,7 +37,7 @@ local function request(self, method, chat_id, data)
   local ok, result = pcall(cjson.decode, response)
   if ok and type(result) == "table" then
     if result.ok and result.result then
-      return result.result
+      return result.result, result
     else
       return false, result, result.error_code
     end
