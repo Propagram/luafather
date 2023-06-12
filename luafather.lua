@@ -4,6 +4,7 @@ local cjson = require("cjson")
 local unpack = table.unpack or unpack
 
 local function request(self, method, chat_id, data)
+  data = data or {}
   local http = require(self.http)
   local url = string.format(self.api, self.token, string.gsub(method, "_([^_]+)", function(word)
     return string.format("%s%s", string.upper(string.sub(word, 1, 1)), string.lower(string.sub(word, 2)))
