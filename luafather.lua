@@ -127,7 +127,7 @@ local function object(self, value, chat_id)
       end
       return function(parent, ...)
         if parent == this then
-          request(self, key, chat_id, ...)
+          request(self, key, chat_id, select(2, ...))
           return parent
         end
       end    
