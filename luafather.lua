@@ -153,7 +153,7 @@ local function session(self, value, id)
         local status = coroutine.status(thread)
         if status == "suspended" then
           session.time = time
-          coroutine.resume(thread, object(self, value))
+          coroutine.resume(thread, session.chat)
         elseif status == "dead" then
           session.time = 0
           self.sessions[session.id] = nil
@@ -170,11 +170,12 @@ local function session(self, value, id)
         session = {
           id = tostring(chat_id),
           thread = coroutine.create(fn),
+          chat = object(self, value, chat_id),
           time = time
         }
         self.sessions[#self.sessions + 1] = session
         self.sessions[session.id] = session
-        coroutine.resume(session.thread, object(self, value))
+        coroutine.resume(session.thread, session.chat)
       end
     end,
     __index = value,
