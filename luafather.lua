@@ -6,9 +6,7 @@ local unpack = table.unpack or unpack
 local function request(self, method, chat_id, data)
   data = data or {}
   local http = require(self.http)
-  local url = string.format(self.api, self.token, string.gsub(method, "_([^_]+)", function(word)
-    return string.format("%s%s", string.upper(string.sub(word, 1, 1)), string.lower(string.sub(word, 2)))
-  end))
+  local url = string.format(self.api, self.token, string.gsub(method, "_([^_]+)", "%1"))
   if chat_id and data.chat_id == nil then
     data.chat_id = chat_id
   end
@@ -121,8 +119,9 @@ end
 
 local function object(self, value, chat_id)
   return setmetatable({}, {
+    value = value,
     __index = function(this, key)
-      local index = rawget(value, key)
+      local index = rawget(getmetatable(this).value, key)
       if index then
         return index
       end
@@ -209,9 +208,11 @@ return function(...)
       end
       return trigger(this, {key, n = 1})      
     end,
-    __call = function(_, value)
+    __call = function(_, value, fn)
       if type(value) == "function" then
         self.triggers[#self.triggers + 1] = {{n = 0}, value}
+      elseif (type(value) == "number" or type(value) == "string") and type(fn) == "function" then
+        -- create session
       elseif type(value) == "table" then
         for _, trigger in pairs(self.triggers) do
           local values
