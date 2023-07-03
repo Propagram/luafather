@@ -1,3 +1,4 @@
+local lru = require("lru")
 local ltn12 = require("ltn12")
 local cjson = require("cjson")
 
@@ -146,35 +147,24 @@ local function session(self, value, id)
         fn = chat_id
         chat_id = id
       end
-      local session = self.sessions[tostring(chat_id)]
-      local time = self.time()
+      local session = self.sessions:get(tostring(chat_id))
       if session then
         local thread = session.thread
         local status = coroutine.status(thread)
         if status == "suspended" then
-          session.time = time
           coroutine.resume(thread, session.chat)
         elseif status == "dead" then
-          session.time = 0
-          self.sessions[session.id] = nil
+          self.sessions:delete(tostring(chat_id))
           session = nil
         end
       end
       if not session then
-        if self.cache > 0 and #self.sessions > self.cache then
-          table.sort(self.sessions, function(left, right)
-            return left.time < right.time
-          end)
-          self.sessions[table.remove(self.sessions, 1).id] = nil
-        end
         session = {
           id = tostring(chat_id),
           thread = coroutine.create(fn),
-          chat = object(self, value, chat_id),
-          time = time
+          chat = object(self, value, chat_id)
         }
-        self.sessions[#self.sessions + 1] = session
-        self.sessions[session.id] = session
+        self.sessions:set(tostring(chat_id), session)
         coroutine.resume(session.thread, session.chat)
       end
     end,
@@ -194,13 +184,12 @@ return function(...)
   end
   assert(type(self.token) == "string", "bot token required") 
   self.options = self.options or {}
-  self.time = self.options.time or (_G.ngx and ngx.time or os.time)
   self.cache = self.options.cache or 64
   self.http = self.options.http or (_G.ngx and "lapis.nginx.http" or "ssl.https")
   self.api = self.options.api or "https://api.telegram.org/bot%s/%s"
   self.headers = self.options.headers or {}
   self.triggers = {}
-  self.sessions = {}
+  self.sessions = lru.new(self.cache)
   return setmetatable(self, {
     __index = function(this, key)
       local index = rawget(this, key)

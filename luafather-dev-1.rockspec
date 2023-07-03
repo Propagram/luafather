@@ -1,5 +1,5 @@
 package = "luafather"
-version = "dev-1"
+version = "dev-2"
 
 source = {
  url = "git+ssh://git@github.com/Propagram/luafather.git",
@@ -18,9 +18,11 @@ Compatible with OpenResty using `lapis.nginx.http`.
 }
 
 dependencies = {
+  "lua >= 5.1",
   "lua-cjson",
   "luasocket",
   "luasec",
+  "lua-lru"
 }
 
 build = {
