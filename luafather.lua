@@ -211,8 +211,6 @@ return function(...)
     __call = function(_, value, fn)
       if type(value) == "function" then
         self.triggers[#self.triggers + 1] = {{n = 0}, value}
-      elseif (type(value) == "number" or type(value) == "string") and type(fn) == "function" then
-        -- create session
       elseif type(value) == "table" then
         for _, trigger in pairs(self.triggers) do
           local values
