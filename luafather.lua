@@ -198,7 +198,7 @@ return function(...)
       end
       return trigger(this, {key, n = 1})      
     end,
-    __call = function(_, value, fn)
+    __call = function(_, value)
       if type(value) == "function" then
         self.triggers[#self.triggers + 1] = {{n = 0}, value}
       elseif type(value) == "table" then
